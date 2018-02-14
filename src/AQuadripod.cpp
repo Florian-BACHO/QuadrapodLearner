@@ -11,25 +11,34 @@
 
 using namespace Quadripod;
 
-static const std::array<uint, 3> layersDescriptor = {AQuadripod::nbMotor,
-						     24,
-						     AQuadripod::nbAction *
-						     AQuadripod::nbMotor};
+static const uint32_t layersDescriptor[] = {AQuadripod::nbMotor,
+					    24,
+					    AQuadripod::nbAction *
+					    AQuadripod::nbMotor};
+static const uint32_t nbLayer = 3;
 
-AQuadripod::AQuadripod(const std::string &filename)
-	: _memoryFilename(filename)
+AQuadripod::AQuadripod(const std::string &memoryFilename,
+		       const std::string &annFilename)
+	: _memoryFilename(memoryFilename), _annFilename(annFilename)
 {
 	try {
-		loadMemoryFromFile(filename);
+		loadMemoryFromFile(memoryFilename);
 	} catch (std::ios_base::failure &e) {
-		std::cout << "No Memory file. Creating one." <<
-			std::endl;
+		std::cout << "No Memory file. " <<
+			"It will be created at memory save." << std::endl;
+	}
+	try {
+		loadAnnFromFile(annFilename);
+	} catch (std::ios_base::failure &e) {
+		std::cout << "No Artificial Neural Network file." << std::endl;
+		createAnn();
 	}
 }
 
 AQuadripod::~AQuadripod()
 {
 	saveMemoryToFile(_memoryFilename);
+	saveAnnToFile(_annFilename);
 }
 
 void AQuadripod::loadMemoryFromFile(const std::string &filename)
@@ -38,15 +47,14 @@ void AQuadripod::loadMemoryFromFile(const std::string &filename)
 	uint64_t memorySize;
 	std::string tmp;
 
+	std::cout  << "Loading Memory..." << std::endl;
 	if (!file.is_open())
 		throw std::ios_base::failure("Cannot open memory file");
 	file >> memorySize;
-	std::cout << "Memory file found." << std::endl <<
-		"Memory size: " << memorySize << std::endl <<
-		"Loading Memory..." << std::endl;
 	for (auto i = 0u; i < memorySize; i++)
 		loadMemory(file);
 	file.close();
+	std::cout << "Done." << std::endl;
 }
 
 void AQuadripod::loadMemory(std::ifstream &file)
@@ -97,6 +105,7 @@ void AQuadripod::saveMemoryToFile(const std::string &filename) const
 	for (const auto &it : _memory)
 		saveMemory(file, it);
 	file.close();
+	std::cout << "Done." << std::endl;
 }
 
 std::vector<ExperienceMemory> AQuadripod::makeTry()
@@ -111,5 +120,26 @@ void AQuadripod::learn()
 
 void AQuadripod::createAnn()
 {
+	std::cout << "Creating Artificial Neural Network..." << std::endl;
+	if (!_ann.create_standard_array(nbLayer, layersDescriptor))
+		throw std::ios_base::failure("Cannot create ANN");
+	_ann.randomize_weights(-1.0f, 1.0f);
+	_ann.set_activation_function_hidden(FANN::SIGMOID);
+	_ann.set_activation_function_output(FANN::LINEAR);
+}
 
+void AQuadripod::loadAnnFromFile(const std::string &filename)
+{
+	std::cout << "Loading Artificial Neural Network..." << std::endl;
+	if (!_ann.create_from_file(filename))
+		throw std::ios_base::failure("Cannot open ANN file");
+	std::cout << "Done." << std::endl;
+}
+
+void AQuadripod::saveAnnToFile(const std::string &filename)
+{
+	std::cout << "Saving Artificial Neural Network..." << std::endl;
+	if (!_ann.save(filename))
+		throw std::ios_base::failure("Cannot save ANN file");
+	std::cout << "Done." << std::endl;
 }

@@ -13,7 +13,7 @@ SRCS		=	src/Main.cpp \
 
 OBJS 		= 	$(SRCS:.cpp=.o)
 
-CXXFLAGS	= 	-Wall -Wextra -W -Werror -std=gnu++17 -g3
+CXXFLAGS	= 	-Wall -Wextra -W -Werror -std=gnu++17
 
 CPPFLAGS 	=	-I ./include
 

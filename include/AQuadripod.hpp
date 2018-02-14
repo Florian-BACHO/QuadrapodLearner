@@ -27,7 +27,8 @@ namespace Quadripod {
 
 	class AQuadripod : public IQuadripod {
 	public:
-		AQuadripod(const std::string &filename); // Filename is the file where all learned Experience memory will be saved
+		AQuadripod(const std::string &memoryFilename,
+			   const std::string &annFilename);
 		~AQuadripod();
 		void learn() override;
 		std::vector<ExperienceMemory> makeTry() override; // Execute a try of nbActionPerTry actions
@@ -46,9 +47,12 @@ namespace Quadripod {
 		void saveMemoryToFile(const std::string &filename) const;
 		void saveMemory(std::ofstream &file,
 				const ExperienceMemory &toSave) const;
-		void createAnn();
+		void loadAnnFromFile(const std::string &filename);
+		void saveAnnToFile(const std::string &filename);
+		void createAnn(void);
 
 		std::string _memoryFilename;
+		std::string _annFilename;
 		std::vector<ExperienceMemory> _memory;
 		FANN::neural_net _ann;
 	};

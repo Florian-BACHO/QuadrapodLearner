@@ -14,7 +14,7 @@ using namespace Quadripod;
 int main()
 {
 	try {
-		PhysicalQuadripod quad("test");
+		PhysicalQuadripod quad("test.mem", "test.ann");
 	} catch (std::exception &e) {
 		std::cout << std::string(e.what()) << std::endl;
 		return (1);

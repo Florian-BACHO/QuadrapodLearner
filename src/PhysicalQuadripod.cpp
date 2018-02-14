@@ -9,8 +9,9 @@
 
 using namespace Quadripod;
 
-PhysicalQuadripod::PhysicalQuadripod(const std::string &filename)
-	: AQuadripod(filename)
+PhysicalQuadripod::PhysicalQuadripod(const std::string &memoryFilename,
+				     const std::string &annFilename)
+	: AQuadripod(memoryFilename, annFilename)
 {}
 
 uint8_t PhysicalQuadripod::getPosition(uint8_t)

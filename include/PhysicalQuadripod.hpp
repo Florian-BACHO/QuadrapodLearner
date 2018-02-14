@@ -12,7 +12,8 @@
 namespace Quadripod {
 	class PhysicalQuadripod final : public AQuadripod {
 	public:
-		PhysicalQuadripod(const std::string &filename);
+		PhysicalQuadripod(const std::string &memoryFilename,
+				  const std::string &annFilename);
 
 	protected:
 		uint8_t getPosition(uint8_t idx) override;
