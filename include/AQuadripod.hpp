@@ -9,12 +9,12 @@
 
 #include <vector>
 #include <utility>
-#include <map>
 #include <string>
 #include <fstream>
 #include <fann.h>
 #include <fann_cpp.h>
 #include "IQuadripod.hpp"
+#include "ExperienceMemory.hpp"
 
 namespace Quadripod {
 
@@ -25,29 +25,31 @@ namespace Quadripod {
 		float maxLimit;
 	};
 
-	using QValue = std::map<QPair, float>;
-
 	class AQuadripod : public IQuadripod {
 	public:
-		AQuadripod(const std::string &filename); // Filename is the file where all learned QValues will be saved
+		AQuadripod(const std::string &filename); // Filename is the file where all learned Experience memory will be saved
+		~AQuadripod();
 		void learn() override;
-		std::vector<QReinforcement> makeTry() override; // Execute a try of nbActionPerTry actions
+		std::vector<ExperienceMemory> makeTry() override; // Execute a try of nbActionPerTry actions
 		static const uint8_t nbMotor = 12;
 		static const uint8_t positionPerMotor = 5;
 		static const uint32_t nbActionPerTry = 10;
+		static const uint8_t nbAction = 3;
 
 	protected:
 		virtual uint8_t getPosition(uint8_t idx) = 0; // 0 <= idx <= nbMotor
 		virtual void setPosition(uint8_t idx, uint8_t position) = 0;
 
 	private:
-		void loadQValuesFromFile(const std::string &filename);
-		void loadQValue(std::ifstream &file);
-		void saveQValuesToFile(const std::string &filename) const;
+		void loadMemoryFromFile(const std::string &filename);
+		void loadMemory(std::ifstream &file);
+		void saveMemoryToFile(const std::string &filename) const;
+		void saveMemory(std::ofstream &file,
+				const ExperienceMemory &toSave) const;
 		void createAnn();
-		void annLearnQValues();
 
-		std::map<uint8_t, QValue> _learnedQValues; // Each motor have a QValue map
+		std::string _memoryFilename;
+		std::vector<ExperienceMemory> _memory;
 		FANN::neural_net _ann;
 	};
 }

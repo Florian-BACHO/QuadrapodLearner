@@ -13,59 +13,95 @@ using namespace Quadripod;
 
 static const std::array<uint, 3> layersDescriptor = {AQuadripod::nbMotor,
 						     24,
-						     1};
+						     AQuadripod::nbAction *
+						     AQuadripod::nbMotor};
 
 AQuadripod::AQuadripod(const std::string &filename)
+	: _memoryFilename(filename)
 {
 	try {
-		loadQValuesFromFile(filename);
+		loadMemoryFromFile(filename);
 	} catch (std::ios_base::failure &e) {
-		std::cout << "No trained QValue file. Creating one." <<
+		std::cout << "No Memory file. Creating one." <<
 			std::endl;
 	}
 }
 
-void AQuadripod::loadQValuesFromFile(const std::string &filename)
+AQuadripod::~AQuadripod()
+{
+	saveMemoryToFile(_memoryFilename);
+}
+
+void AQuadripod::loadMemoryFromFile(const std::string &filename)
 {
 	std::ifstream file(filename);
-	uint64_t nbQValues;
+	uint64_t memorySize;
 	std::string tmp;
 
 	if (!file.is_open())
-		throw std::ios_base::failure("Cannot open file");
-	file >> nbQValues;
-	std::cout << "QValue file found." << std::endl <<
-		"Number of learned QValues: " << nbQValues << std::endl <<
-		"Loading QValues..." << std::endl;
-	for (auto i = 0u; i < nbQValues; i++)
-		loadQValue(file);
+		throw std::ios_base::failure("Cannot open memory file");
+	file >> memorySize;
+	std::cout << "Memory file found." << std::endl <<
+		"Memory size: " << memorySize << std::endl <<
+		"Loading Memory..." << std::endl;
+	for (auto i = 0u; i < memorySize; i++)
+		loadMemory(file);
 	file.close();
 }
 
-void AQuadripod::loadQValue(std::ifstream &file)
+void AQuadripod::loadMemory(std::ifstream &file)
 {
-	std::vector<uint8_t> state;
-	uint8_t idx;
-        uint8_t tmp;
-	float ftmp;
-	QPair stateAction;
+	ExperienceMemory mem;
+	uint8_t utmp;
 
-	file >> idx;
 	for (auto i = 0u; i < AQuadripod::nbMotor; i++) {
-		file >> tmp;
-		state.push_back(tmp);
+		file >> utmp;
+		mem.state.push_back(utmp);
 	}
-	file >> tmp;
-	stateAction = std::make_pair(state, static_cast<Action>(tmp));
-	file >> ftmp;
-	_learnedQValues[idx][stateAction] = ftmp;
-	std::cout << "Learned QValues loaded." << std::endl;
-	annLearnQValues();
+	for (auto i = 0u; i < AQuadripod::nbMotor; i++) {
+		file >> utmp;
+		mem.actions.push_back(static_cast<Action>(utmp));
+	}
+	for (auto i = 0u; i < AQuadripod::nbMotor; i++) {
+		file >> utmp;
+		mem.reachedState.push_back(utmp);
+	}
+	file >> mem.reinforcement;
+	_memory.push_back(mem);
 }
 
-std::vector<QReinforcement> AQuadripod::makeTry()
+void AQuadripod::saveMemory(std::ofstream &file,
+			    const ExperienceMemory &toSave) const
 {
-	return (std::vector<QReinforcement>());
+	for (auto i : toSave.state)
+		file << i << " ";
+	file << std::endl;
+	for (auto i : toSave.actions)
+		file << static_cast<uint8_t>(i) << " ";
+	file << std::endl;
+	for (auto i : toSave.reachedState)
+		file << i << " ";
+	file << std::endl;
+	file << toSave.reinforcement;
+}
+
+void AQuadripod::saveMemoryToFile(const std::string &filename) const
+{
+	std::ofstream file(filename, std::ios::trunc);
+
+	if (!file.is_open())
+		throw std::ios_base::failure("Cannot open memory file");
+	file << _memory.size() << std::endl;
+	std::cout << "Memory file created and cleared." << std::endl <<
+		"Saving " << _memory.size() << " memory..." << std::endl;
+	for (const auto &it : _memory)
+		saveMemory(file, it);
+	file.close();
+}
+
+std::vector<ExperienceMemory> AQuadripod::makeTry()
+{
+	return (std::vector<ExperienceMemory>());
 }
 
 void AQuadripod::learn()
@@ -75,9 +111,5 @@ void AQuadripod::learn()
 
 void AQuadripod::createAnn()
 {
-}
 
-void AQuadripod::annLearnQValues()
-{
-	createAnn();
 }
