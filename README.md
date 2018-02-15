@@ -18,6 +18,13 @@ A program that learn how to control a quadripod robot using Deep Reinforcement L
 - 2 Ultrasonics sensors (HC-SR04): pointing to the ground, it allow us to know the distance from the ground;
 - 1 myAHRS+ (Attitude Heading Reference System): his 3-axis 16-bit gyroscope allow us to know the body orientation.
 
+## Algorithm Details
+
+- QLearning Algorithm: Reinforcement algorithm based on environment exploration;
+- This algorithm is consistent with the Markov decision process and allow us to calculate state-actions values (named QValues) from tries;
+- The agent will execute the action who have the highest QValue (to increase the expected future reward);
+- It is coupled with a fully connected Artificial Neural Network to give an estimation of unknowned QValues.
+
 ## Artificial Neural Network Details
 
 - Used library: Fast Artificial Neural Network (FANN) C++ Wrapper;
