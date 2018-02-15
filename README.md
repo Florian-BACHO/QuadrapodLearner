@@ -27,7 +27,8 @@ A program that learn how to control a quadripod robot using Deep Reinforcement L
 - QLearning Algorithm: Reinforcement algorithm based on environment exploration;
 - This algorithm is consistent with the Markov decision process and allow us to calculate state-actions values (named QValues) from tries;
 - The agent will execute the action who have the highest QValue (to increase the expected future reward);
-- It is coupled with a fully connected Artificial Neural Network to give an estimation of unknowned QValues.
+- It is coupled with a fully connected Artificial Neural Network to give an estimation of unknowned QValues;
+- Discount factor: 0.5.
 
 ## Artificial Neural Network Details
 
