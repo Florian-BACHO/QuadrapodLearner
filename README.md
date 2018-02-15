@@ -1,17 +1,20 @@
 # QuadripodLearner
 A program that learn how to control a quadripod robot using Deep Reinforcement Learning algorithm (QLearning algorithm using Artificial Neural Network)
 
-- Step 1: Learn how to stand up
-- Step 2: Learn how to turn right / left
-- Step 3: Learn how to walk
-- Step 4: Discover an environment
+- Step 1: Learn how to stand up;
+- Step 2: Learn how to turn right / left;
+- Step 3: Learn how to walk;
+- Step 4: Discover an environment.
 
 ## Quadripod Details
 
-- NbLegs = 4
-- NbMotorPerLegs = 3
-- NbMotor = NbLegs * NbMotorPerLegs = 3 * 4 = 12
-- Controler: Raspberry Pi 3
+- Structure Material: Plexiglas;
+- Servo-Motor: Dynamixel AX-12A;
+- Battery: Zippy8000 30C Serie;
+- NbLegs = 4;
+- NbMotorPerLegs = 3;
+- NbMotor = NbLegs * NbMotorPerLegs = 3 * 4 = 12;
+- Controler: Raspberry Pi 3.
 
 ### Sensors
 
@@ -20,7 +23,7 @@ A program that learn how to control a quadripod robot using Deep Reinforcement L
 
 ## Algorithm Details
 
-- Programming language: C++17
+- Programming language: C++17;
 - QLearning Algorithm: Reinforcement algorithm based on environment exploration;
 - This algorithm is consistent with the Markov decision process and allow us to calculate state-actions values (named QValues) from tries;
 - The agent will execute the action who have the highest QValue (to increase the expected future reward);
@@ -29,7 +32,7 @@ A program that learn how to control a quadripod robot using Deep Reinforcement L
 ## Artificial Neural Network Details
 
 - Used library: Fast Artificial Neural Network (FANN) C++ Wrapper;
-- Number of layer: 3
+- Number of layer: 3;
 - Layer 1 (entry layer): nbMotor = 12 neurons;
 - Layer 2 (hidden layer): 24 neurons (Sigmoïd activation function);
 - Layer 3 (output layer): nbMotor * nbAction = 12 * 3 = 36 (Linear activation function);
