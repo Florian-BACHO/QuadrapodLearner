@@ -20,6 +20,7 @@ A program that learn how to control a quadripod robot using Deep Reinforcement L
 
 ## Algorithm Details
 
+- Programming language: C++17
 - QLearning Algorithm: Reinforcement algorithm based on environment exploration;
 - This algorithm is consistent with the Markov decision process and allow us to calculate state-actions values (named QValues) from tries;
 - The agent will execute the action who have the highest QValue (to increase the expected future reward);
