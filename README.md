@@ -1,12 +1,12 @@
-# QuadripodLearner
-A program that learn how to control a quadripod robot using Deep Reinforcement Learning algorithm (QLearning algorithm using Artificial Neural Network)
+# QuadrapodLearner
+A program that learn how to control a quadrapod robot using Deep Reinforcement Learning algorithm (QLearning algorithm using Artificial Neural Network)
 
 - Step 1: Learn how to stand up;
 - Step 2: Learn how to turn right / left;
 - Step 3: Learn how to walk;
 - Step 4: Discover an environment.
 
-## Quadripod Details
+## Quadrapod Details
 
 - Structure Material: Plexiglas;
 - Servo-Motor: Dynamixel AX-12A;

@@ -8,8 +8,8 @@ import settings
 
 
 class GetUp:
-    def __init__(self):
-        self.env = GetUpEnvironment()
+    def __init__(self, qMotors, myAHRS, distSensor1, distSensor2):
+        self.env = GetUpEnvironment(qMotors, myAHRS, distSensor1, distSensor2)
 
         self.createANN()
         self.initLearning()
@@ -95,7 +95,7 @@ class GetUp:
             current_rewards = [] # Rewards of current try
             current_gradients = [] # Gradients of current try
 
-            for i in range(maxStep + 1):
+            while True:
                 a = self.actionsLearning.eval(feed_dict={self.entry: [obs]})[0] # Take a decision
                 grads = session.run(self.gradients, feed_dict={self.entry: [obs], self.y: a}) # Get gradients
 
@@ -105,7 +105,7 @@ class GetUp:
 
                 if done: # Break if the try is finished
                     break;
-            print(obs, reward)
+            print(current_rewards)
             all_rewards.append(current_rewards)
             all_gradients.append(current_gradients)
 

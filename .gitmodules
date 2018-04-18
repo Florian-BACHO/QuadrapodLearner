@@ -1,0 +1,3 @@
+[submodule "Python-myAHRS-"]
+	path = Python-myAHRS-
+	url = https://github.com/Florian-BACHO/Python-myAHRS-.git
