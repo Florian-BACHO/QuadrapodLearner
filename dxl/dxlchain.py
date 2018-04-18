@@ -10,6 +10,7 @@ from .dxlregisters import *
 from .dxlmotors import *
 from .dxlsensors import *
 
+from time import sleep
 import sys
 import serial
 import time
@@ -55,7 +56,7 @@ class DxlChain:
 
     def _open(self):
         logging.info("Opening serial port %s at rate %d bps, timeout %f s"%(self.portname,self.rate,self.timeout))    
-        self.port=serial.Serial(self.portname,self.rate,timeout=self.timeout)    
+        self.port=serial.Serial(self.portname,self.rate,timeout=self.timeout)
 
     def close(self):
         """Closes the serial port"""
@@ -101,7 +102,7 @@ class DxlChain:
     def _recv(self):
         """Wait for a response on the serial, validate it, raise errors if any, return id and data if any """
         # Read the first 4 bytes 0xFF,0xFF,id,length
-        header = array.array('B',self.port.read(4))
+        header = array.array('B', self.port.read(4))
         if(len(header)!=4):
             raise DxlCommunicationException('Could not read first 4 bytes of expected response, got %d bytes'%len(header))
         else :
@@ -199,11 +200,11 @@ class DxlChain:
 
         
     # Register Access
-
+    
     def get_reg(self,id,name):
         """Read a named register from a motor"""
         if id not in list(self.motors.keys()):
-            raise DxlConfigurationException('Motor ID %d does not exist on the chain'%(id)) 
+                raise DxlConfigurationException('Motor ID %d does not exist on the chain'%(id)) 
         m=self.motors[id]
         reg=m.registers[name]
         (esize,cmd)=m.getRegisterCmd(name)
@@ -529,6 +530,6 @@ class DxlChain:
         d=json.loads(txt)
         pos=dict()
         for k,v in list(d.items()):
-            pos[int(k)]=v            
+            pos[int(k)]=v
         self.set_position(pos,blocking)
         

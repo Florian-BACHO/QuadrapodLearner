@@ -1,13 +1,14 @@
 #!/usr/bin/python3
-from quadrapodMotors.quadrapodMotors import QuadrapodMotors
-from quadrapodMotors.leg import LegType
-from quadrapodMotors.joint import JointType
+from dxl.dxlchain import DxlChain
 from settings import *
+import logging
 
-def saveInitialMotorsPositions(motorList):
+# Save and restore motors positions when the robot is flat (initial pos)
+
+def saveInitialMotorsPositions(chain):
     file = open(initialPosFilename, "w")
-    for it in motorList:
-        file.write(str(it.getPosition()) + "\n")
+    for id in allMotorsIds:
+        file.write(str(chain.get_reg(id, "present_position")) + "\n")
     file.close()
 
 def getInitialMotorsPositions():
@@ -20,6 +21,12 @@ def getInitialMotorsPositions():
     return (out)
 
 if __name__ == "__main__":
-    qMotors = QuadrapodMotors("/dev/ttyACM1")
-    motors = qMotors.getAllMotors()
-    saveInitialMotorsPositions(motors)
+    logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
+    chain = DxlChain(dxlPath, rate=1000000)
+
+    chainIds = chain.get_motor_list() # Get chain ids
+    # Check if all needed motors are in the chain
+    for motor in allMotorsIds:
+        if not motor in chainIds:
+            raise ValueError("{}: motor not found in chain".format(motor))
+    saveInitialMotorsPositions(chain)

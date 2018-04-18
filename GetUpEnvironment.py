@@ -1,76 +1,49 @@
 from math import sqrt
 from math import fabs
 from random import randint
-from math import pow
 import numpy as np
 from settings import *
-from positionInitializer import getInitialMotorsPositions
-import time
 
 class GetUpEnvironment:
-    def __init__(self, qMotors, myAHRS, distSensor1, distSensor2):
-        self.qMotors = qMotors
-        self.allMotors = qMotors.getAllMotors()
-        self.myAHRS = myAHRS
-        self.distSensor1 = distSensor1
-        self.distSensor2 = distSensor2
-        self.initMotorBounds()
+    def __init__(self, quadrapod):
+        self.quadrapod = quadrapod
         self.step = 0
-        self.begin = time.time()
-
-    def initMotorBounds(self):
-        self.motorsBounds = []
-        for i, it in enumerate(getInitialMotorsPositions()):
-            if motorsDirs[i] == -1:
-                self.motorsBounds.append([it - maxMotorStep, it])
-            elif motorsDirs[i] == 1:
-                self.motorsBounds.append([it, it + maxMotorStep])
 
     def getObs(self):
-        out = [(it.getPosition() - self.motorsBounds[i][0]) / (self.motorsBounds[i][1] - self.motorsBounds[i][0]) \
-               for i, it in enumerate(self.allMotors)]
+        out = [self.quadrapod.getMotorPosition(id) for id in allMotorsIds]
         return np.array(out)
-
-    def waitEndOfActions(self):
-        self.qMotors.waitStopped()
 
     def reset(self):
         self.step = 0
-        for i, it in enumerate(self.allMotors):
-            randPos = randint(0, nbMove - 1)
-            pos = self.motorsBounds[i][0] + (moveStepSize * randPos)
-            it.goto(pos)
-        self.waitEndOfActions()
-        self.begin = time.time()
+        for i, it in enumerate(allMotorsIds):
+            if (i % 3) == 0: # Coxa
+                target = randint(0, nbMove - 1)
+            elif (i % 3) == 1: # Femur
+                target = 0
+            else: # Tibia
+                target = nbMove - 1
+            self.quadrapod.moveMotor(it, target / nbMove, 100)
+        self.quadrapod.waitMotorsStopped()
         return self.getObs()
 
     def executeStep(self, action):
         reward = 0.
         done = False
 
-        if time.time() - self.begin >= maxTryDuration:
+        if self.step == nbStepPerTry:
             done = True
 
-        motor = int(action / nbActionPerMotor)
-        action = action % nbActionPerMotor
+        motorIdx = int(action / nbMove)
+        pos = action % nbMove
 
-        if motor < nbMotor:
-            pos = self.allMotors[motor].getPosition()
-            if action == 0:
-                pos += moveStepSize
-            elif action == 1:
-                pos -= moveStepSize
-            if pos < self.motorsBounds[motor][0]:
-                pos = self.motorsBounds[motor][0]
-            elif pos > self.motorsBounds[motor][1]:
-                pos = self.motorsBounds[motor][1]
-            self.allMotors[motor].goto(pos)
+        if motorIdx < nbMotor:
+            self.quadrapod.moveMotor(allMotorsIds[motorIdx], pos / nbMove, motorSpeed)
 
-        reward -= fabs(17 - self.distSensor1.getDistance())
-        reward -= fabs(17 - self.distSensor2.getDistance())
-        data = self.myAHRS.getValues()
-        reward -= fabs(data[1] * gyroRewardCoeff)
-        reward -= fabs(data[2] * gyroRewardCoeff)
+        frontDist, backDist, roll, pitch = self.quadrapod.getSensorsValues()
+        reward -= fabs(17 - frontDist)
+        reward -= fabs(17 - backDist)
+        reward -= fabs(roll * gyroRewardCoeff)
+        reward -= fabs(pitch * gyroRewardCoeff)
 
         self.step += 1
 
