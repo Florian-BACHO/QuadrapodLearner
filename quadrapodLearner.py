@@ -27,7 +27,7 @@ def main():
         if path.exists(modelSavePath + ".meta"):
             saver.restore(sess, modelSavePath)
         while True:
-            getUpModel.executePeriod(sess)
+            getUpModel.executeLearningPeriod(sess)
             save_path = saver.save(sess, modelSavePath)
 
 if __name__ == "__main__":

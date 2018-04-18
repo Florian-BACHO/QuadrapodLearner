@@ -31,16 +31,16 @@ backLeftIds = [30, 31, 32]
 backRightIds = [40, 41, 42]
 motorAngle = 300 # From 0 to 300 degree
 nbMotorStep = 1024 # Possibles positions
-motorSpeed = 800
+motorSpeed = 1023
 motorTorque = 800
 
-#               Properties for the quadrapod (limits)
+#       Properties for the quadrapod (limits)
 maxMotorStep = (nbMotorStep * maxMotorAngle) / motorAngle # Number of step with 90 angle
 moveStepSize = maxMotorStep / nbMove
 
 #       Neural network
 nbEntry = nbMotor
-nbHiddens = [50]
-nbOutput = nbActionPerMotor # Argmax on linear output
+nbHiddens = [30, 50, 30]
+nbOutput = nbActionPerMotor * nbMotor # Argmax on linear output
 modelSavePath = "./trainSave/model.ckpt"
 learningRate = 1e-2
