@@ -7,13 +7,13 @@ nbTryPerTrain = 10 # Number of try each epoch
 punishLosses = True
 punishCoeff = 1.0
 discountRate = 0.5
-gyroRewardCoeff = 0.5
+gyroRewardCoeff = 0.25
 
 #       Quadrapod properties
 nbLeg = 4 # 2 front legs and 2 back legs
 nbMotorPerLeg = 3
 nbMotor = nbLeg * nbMotorPerLeg
-nbActionPerMotor = 3 # Move up ; Wait ; Move down
+nbActionPerMotor = 2 # Move up ; Move down
 maxMotorAngle = 90 # Limit motors to 90 degree angle
 nbMove = 5 # Number of step that the quadrapod have to execute to reach 90 degree
 frontRightDirs = [-1., 1., -1] # Coxa, femur, tibia
@@ -41,6 +41,6 @@ moveStepSize = maxMotorStep / nbMove
 #       Neural network
 nbEntry = nbMotor
 nbHiddens = [30, 50, 30]
-nbOutput = nbActionPerMotor * nbMotor # Argmax on linear output
+nbOutput = (nbActionPerMotor * nbMotor) + 1 # All motor actions + wait action
 modelSavePath = "./trainSave/model.ckpt"
 learningRate = 1e-2

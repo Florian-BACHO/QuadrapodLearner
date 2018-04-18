@@ -53,20 +53,21 @@ class GetUpEnvironment:
 
         motor = int(action / nbActionPerMotor)
         action = action % nbActionPerMotor
-        
-        pos = self.allMotors[motor].getPosition()
-        if action == 0:
-            pos += moveStepSize
-        elif action == 2:
-            pos -= moveStepSize
-        if pos < self.motorsBounds[motor][0]:
-            pos = self.motorsBounds[motor][0]
-        elif pos > self.motorsBounds[motor][1]:
-            pos = self.motorsBounds[motor][1]
-        self.allMotors[motor].goto(pos)
 
-        reward -= fabs(20 - self.distSensor1.getDistance())
-        reward -= fabs(20 - self.distSensor2.getDistance())
+        if motor < nbMotor:
+            pos = self.allMotors[motor].getPosition()
+            if action == 0:
+                pos += moveStepSize
+            elif action == 1:
+                pos -= moveStepSize
+            if pos < self.motorsBounds[motor][0]:
+                pos = self.motorsBounds[motor][0]
+            elif pos > self.motorsBounds[motor][1]:
+                pos = self.motorsBounds[motor][1]
+            self.allMotors[motor].goto(pos)
+
+        reward -= fabs(17 - self.distSensor1.getDistance())
+        reward -= fabs(17 - self.distSensor2.getDistance())
         data = self.myAHRS.getValues()
         reward -= fabs(data[1] * gyroRewardCoeff)
         reward -= fabs(data[2] * gyroRewardCoeff)

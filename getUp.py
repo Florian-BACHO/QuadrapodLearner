@@ -52,8 +52,11 @@ class GetUp:
                 current_rewards.append(reward)
 
                 if done: # Break if the try is finished
+                    # Establish a latence for rewards (because moving a motor is not instant)
+                    current_rewards.append(reward)
+                    current_rewards.pop(0)
                     break
-            print(reward)
+            print("Mean Rewards:" + str(np.array(current_rewards).mean()) + "| Last reward:" + str(reward))
             all_rewards.append(current_rewards)
             self.ann.newTry()
 
