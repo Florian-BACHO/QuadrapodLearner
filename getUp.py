@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 from math import fabs
 import tensorflow as tf
 import numpy as np
@@ -25,7 +23,7 @@ class GetUp:
         self.hiddens = []
         for i, it in enumerate(nbHiddens):
             self.hiddens.append(tf.layers.dense(self.entry if i == 0 else \
-                                                self.hiddens[-1], it, activation=tf.nn.relu))
+                                                self.hiddens[-1], it, activation=tf.nn.selu))
         # One output layer per motor
         self.out = tf.concat([tf.layers.dense(self.hiddens[-1], nbActionPerMotor) for _ in range(nbMotor)], axis=0)
         # Actions taken randomly with output layers probabilities
@@ -36,10 +34,9 @@ class GetUp:
     def initLearning(self):
         self.y = tf.placeholder(tf.int32, shape=[nbMotor]) # Expected activations
         self.xentropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.out, labels=self.y) # Loss
-        self.loss = tf.reduce_sum(self.xentropy)
 
         self.optimizer = tf.train.AdamOptimizer(learning_rate=learningRate)
-        self.grad_and_vars = self.optimizer.compute_gradients(self.loss) # Compute gradients
+        self.grad_and_vars = self.optimizer.compute_gradients(self.xentropy) # Compute gradients
         self.gradients = [grad for grad, var in self.grad_and_vars] # Get gradients
         self.initGradientPlaceholders()
         self.training_op = self.optimizer.apply_gradients(self.grad_and_vars_feed)
@@ -108,6 +105,7 @@ class GetUp:
 
                 if done: # Break if the try is finished
                     break;
+            print(obs, reward)
             all_rewards.append(current_rewards)
             all_gradients.append(current_gradients)
 
@@ -120,21 +118,3 @@ class GetUp:
 
     def getAction(self, session, obs):
         return self.actions.eval(feed_dict={entry: [obs]}) # Take a decision
-
-def main():
-    getUpModel = GetUp()
-
-    init = tf.global_variables_initializer()
-    saver = tf.train.Saver()
-
-    # Run the session
-    with tf.Session() as sess:
-        sess.run(init) # Initialize variables
-
-        if path.exists(modelSavePath + ".meta"):
-            saver.restore(sess, modelSavePath)
-        getUpModel.executePeriod(sess)
-        save_path = saver.save(sess, modelSavePath)
-
-if __name__ == "__main__":
-    main()

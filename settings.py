@@ -8,7 +8,7 @@ maxStep = 100 # Maximum step in a try
 nbAction = 3 # Buy, Wait, Sell
 punishLosses = True
 punishCoeff = 1.0
-discountRate = 0.99
+discountRate = 0.5
 
 #     Learning Parameters
 nbTrain = 500 # Maximum train epoch
@@ -17,7 +17,7 @@ nbTryPerTrain = 10 # Number of try each epoch
 # Neural network
 nbHistory = 20 # Number of historical data given to the recurrent layer
 nbEntry = nbMotor
-nbHiddens = [30, 30]
+nbHiddens = [50]
 nbOutput = nbAction # Argmax on linear output
 modelSavePath = "./trainSave/model.ckpt"
 #     Gradient Descent Parameters
