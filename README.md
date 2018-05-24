@@ -35,3 +35,7 @@ A program that learn how to control a quadrapod robot using Deep Reinforcement L
 - Layer 2 (hidden layer): 24 neurons (RELU activation function)
 - Layer 3 (output layer): nbMotor * nbAction = 12 * 3 = 36 (Linear activation function)
 - Learning Rate: 0.01
+
+## Research Links
+
+- [Distral: Robust Multitask Reinforcement Learning](https://arxiv.org/abs/1707.04175)
